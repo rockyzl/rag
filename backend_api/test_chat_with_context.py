@@ -15,7 +15,7 @@ Summary of answer
 </context>
 """
 
-with open("news_result.txt") as in_file:
+with open("news_result.txt", encoding="utf-8") as in_file:
     context_content = in_file.read()
 
 system_prompt = system_prompt_template.format(
@@ -29,7 +29,7 @@ async def chat_func():
     client = AsyncOpenAI()
 
     result = await client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": "Any news about cell phones?"}

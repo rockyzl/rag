@@ -91,3 +91,6 @@ if __name__ == "__main__":
                 print(f"{word}: {similarity}")
         else:
             print("No similar words found or word not in embeddings.")
+
+
+
