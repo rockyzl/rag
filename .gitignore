@@ -151,6 +151,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+langchain_chatbot_env/
+
 
 # Spyder project settings
 .spyderproject
