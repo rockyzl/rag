@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Chatbot Examples for Large Language Model Course
 This repo include source code for the [Large Language Model Course](https://techlent.com/cn/application/llm).
 
@@ -11,4 +10,3 @@ This repo include source code for the [Large Language Model Course](https://tech
 =======
 # rag
 rag building 
->>>>>>> 0231eb36bb9e2f1a8ffaef24c21a80416f6b8980
