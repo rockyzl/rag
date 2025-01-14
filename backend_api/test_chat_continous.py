@@ -15,7 +15,7 @@ class ChatSession:
         self.system_prompt = self._create_system_prompt()
 
     def _create_system_prompt(self):
-        template = """You are Bobby, a virtual assistant create by Huajun. Today is {today}."""
+        template = """You are Bobby, a virtual assistant created by Huajun. Today is {today}."""
         return template.format(today=datetime.today().strftime('%Y-%m-%d'))
 
     def trim_history(self, history):
@@ -23,23 +23,26 @@ class ChatSession:
 
     async def chat_func(self, history):
         try:
-            async with asyncio.timeout(self.timeout):
-                result = await self.client.chat.completions.create(
+            # Use asyncio.wait_for to enforce a timeout
+            result = await asyncio.wait_for(
+                self.client.chat.completions.create(
                     model=self.model,
                     messages=[{"role": "system", "content": self.system_prompt}] + self.trim_history(history),
                     max_tokens=256,
                     temperature=0.5,
                     stream=True,
-                )
+                ),
+                timeout=self.timeout,  # Specify timeout here
+            )
 
-                buffer = []
-                async for r in result:
-                    if next_token := r.choices[0].delta.content:
-                        print(next_token, flush=True, end="")
-                        buffer.append(next_token)
+            buffer = []
+            async for r in result:
+                if next_token := r.choices[0].delta.content:
+                    print(next_token, flush=True, end="")
+                    buffer.append(next_token)
 
-                print("\n", flush=True)
-                return "".join(buffer)
+            print("\n", flush=True)
+            return "".join(buffer)
 
         except asyncio.TimeoutError:
             logger.error("Request timed out")
@@ -48,25 +51,40 @@ class ChatSession:
             logger.error(f"Error during chat: {str(e)}")
             return f"Error: {str(e)}"
 
-    async def start(self):
-        history = []
-        while True:
-            try:
-                user_input = input("> ").strip()
-                if user_input.lower() == "exit":
-                    break
-                if not user_input:
-                    continue
+    async def start(self, history=None):
+        if history is None:
+            history = []
 
-                history.append({"role": "user", "content": user_input})
-                bot_response = await self.chat_func(history)
-                history.append({"role": "assistant", "content": bot_response})
+        try:
+            # Get user input
+            user_input = input("> ").strip()
 
-            except KeyboardInterrupt:
-                print("\nExiting chat...")
-                break
-            except Exception as e:
-                logger.error(f"Error in chat loop: {str(e)}")
+            # Exit condition
+            if user_input.lower() == "exit":
+                print("Goodbye!")
+                return
+
+            if not user_input:
+                # Skip empty input and call start recursively
+                await self.start(history)
+                return
+
+            # Append user input to history
+            history.append({"role": "user", "content": user_input})
+
+            # Get bot's response
+            bot_response = await self.chat_func(history)
+
+            # Append bot response to history
+            history.append({"role": "assistant", "content": bot_response})
+
+            # Call start recursively for the next interaction
+            await self.start(history)
+
+        except KeyboardInterrupt:
+            print("\nExiting chat...")
+        except Exception as e:
+            logger.error(f"Error in chat loop: {str(e)}")
 
 if __name__ == "__main__":
     chat = ChatSession()

@@ -42,6 +42,6 @@ rag_chain = (
     | StrOutputParser()
 )
 
-result = rag_chain.invoke("What algorithms did GPT-4 use?")
+result = rag_chain.invoke("What is attention?")
 print(result)
 

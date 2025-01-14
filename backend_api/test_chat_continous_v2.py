@@ -91,6 +91,6 @@ class ChatSession:
 
 if __name__ == "__main__":
     # Provide the path to the uploaded PDF file
-    pdf_path = 'data\\paper.pdf'
+    pdf_path = '../data/paper.pdf' 
     chat = ChatSession(pdf_path=pdf_path)
     asyncio.run(chat.start())
