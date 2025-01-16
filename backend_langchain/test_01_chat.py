@@ -2,10 +2,14 @@ from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 
 from langchain_core.messages import HumanMessage, SystemMessage
+from dotenv import load_dotenv
+import os
 
+# Load .env file
+load_dotenv()
 
 llm1 = ChatOpenAI()
-# llm2 = ChatAnthropic(model_name="claude-2.0")
+llm2 = ChatAnthropic(model_name="claude-2.0")
 
 messages = [
     SystemMessage(content="You're a helpful assistant"),
@@ -15,13 +19,13 @@ messages = [
 result1 = llm1.invoke(messages)
 print("Result from OpenAI:", result1.content)
 
-# result2 = llm2.invoke(messages)
-# print("Result from Anthropic:", result2.content)
+result2 = llm2.invoke(messages)
+print("Result from Anthropic:", result2.content)
 
 print("Streaming result from OpenAI:")
 for chunk in llm1.stream(messages):
     print(chunk.content, end="", flush=True)
 
-# print("Streaming result from Anthropic:")
-# for chunk in llm2.stream(messages):
-#     print(chunk.content, end="", flush=True)
+print("/nStreaming result from Anthropic:")
+for chunk in llm2.stream(messages):
+    print(chunk.content, end="", flush=True)

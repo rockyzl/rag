@@ -10,11 +10,11 @@ final_prompt = ChatPromptTemplate.from_messages([
     ("human", human_template),
 ])
 
-#print(final_prompt.format(
-#    input_language="English", 
-#    output_language="French", 
-#    text="I love programming.",
-#))
+print(final_prompt.format(
+   input_language="English", 
+   output_language="French", 
+   text="I love programming.",
+))
 
 chat_model = ChatOpenAI()
 
