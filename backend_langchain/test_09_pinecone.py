@@ -3,10 +3,18 @@ from langchain.chains import RetrievalQA
 from langchain_pinecone import PineconeVectorStore
 from langchain_openai import OpenAIEmbeddings
 from pinecone import Pinecone
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+# print(os.getenv("PINECONE_API_KEY"))
+# print(os.getenv("OPENAI_API_KEY"))
 
 pc = Pinecone()
+print(pc.list_indexes())
 
-index_name = 'langchain-retrieval-augmentation-fast'
+index_name = 'llm-rag2'
 index = pc.Index(index_name)
 index.describe_index_stats()
 
@@ -15,9 +23,16 @@ llm = ChatOpenAI(
     temperature=0.0
 )
 
+# Define the text field and embeddings
 text_field = "text"
-embeddings = OpenAIEmbeddings(model='text-embedding-ada-002')
-vectorstore = PineconeVectorStore(index, embeddings, text_field)
+embeddings = OpenAIEmbeddings(model="text-embedding-ada-002")
+
+# Initialize the Pinecone vector store
+vectorstore = PineconeVectorStore(
+    index=index,            # Pinecone index
+    embedding=embeddings,   # Embedding model
+    text_key=text_field     # Field in documents containing text
+)
 
 qa = RetrievalQA.from_chain_type(
     llm=llm,
