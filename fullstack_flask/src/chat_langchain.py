@@ -12,7 +12,7 @@ from .models import db, ChatMessage
 pc = Pinecone()
 
 print("Connecting to Pinecone index")
-index_name = 'langchain-retrieval-augmentation-fast'
+index_name = 'llm-rag3'
 index = pc.Index(index_name)
 index.describe_index_stats()
 
@@ -21,12 +21,22 @@ embeddings = OpenAIEmbeddings(model='text-embedding-ada-002')
 vectorstore = PineconeVectorStore(index, embeddings, text_field)
 
 print("Creating chains")
-template = """You are a helpful assistant. I will give you a list of articles with title and text. Please answer questions.
+template = """You are an exceptionally knowledgeable and thorough assistant. I will provide you with a list of articles, each containing a title and text. When answering questions, please provide detailed, comprehensive, and well-explained responses. Ensure that your answers include:
+
+1. **In-depth explanations** of the concepts involved.
+2. **Step-by-step reasoning** where applicable.
+3. **References** to relevant sections of the provided articles to support your answers.
+4. **Examples** or analogies to illustrate complex ideas.
+
 Articles:
 {context}
 
 Question: {question}
+
+Answer:
 """
+prompt = ChatPromptTemplate.from_template(template)
+
 prompt = ChatPromptTemplate.from_template(template)
 
 llm = ChatOpenAI(streaming=True)
